@@ -1,0 +1,24 @@
+name: flutter_form_bloc_userRepository
+description: Flutter form bloc login with user repository and authentication loc
+version: 0.0.1+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_form_bloc: ^0.12.1
+  flutter_bloc: ^3.2.0
+  user_repository:
+    path: user_repository
+  equatable: ^1.1.0
+
+  cupertino_icons: ^0.1.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
