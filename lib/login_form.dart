@@ -122,15 +122,20 @@ class LoginFormBloc extends FormBloc<String, String> {
     print(password.value);
     print(showSuccessResponse.value);
 
-    final token = await userRepository.authenticate(
-      username: email.value,
-      password: password.value,
-    );
-    if (showSuccessResponse.value) {
-      emitSuccess();
-      authenticationBloc.add(LoggedIn(token: token));
-    } else {
-      emitFailure(failureResponse: 'This is an awesome error!');
+    try{
+      final token = await userRepository.authenticate(
+        username: email.value,
+        password: password.value,
+      );
+      if (showSuccessResponse.value) {
+        authenticationBloc.add(LoggedIn(token: token));
+        emitSuccess();
+      } else {
+        emitFailure(failureResponse: 'Awsome Error!');
+      }
+    } catch (e) {
+       // TODO: Map exception to error message 
+      emitFailure(failureResponse: e.toString());
     }
   }
 }
