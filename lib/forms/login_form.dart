@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:user_repository/user_repository.dart';
-import 'authentication/authentication.dart';
-import 'loading_dialog.dart';
+import '../blocs/login_form_bloc.dart';
+import '../authentication/authentication.dart';
+import '../widgets/widgets.dart';
 
 class LoginForm extends StatelessWidget {
   final UserRepository userRepository;
@@ -63,7 +64,7 @@ class LoginForm extends StatelessWidget {
                         booleanFieldBloc: loginFormBloc.showSuccessResponse,
                         body: Container(
                           alignment: Alignment.centerLeft,
-                          child: Text('Show success response'),
+                          child: Text('Show failure response'),
                         ),
                       ),
                     ),
@@ -79,63 +80,5 @@ class LoginForm extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-class LoginFormBloc extends FormBloc<String, String> {
-  final UserRepository userRepository;
-  final AuthenticationBloc authenticationBloc;
-
-  final email = TextFieldBloc(
-    validators: [
-      FieldBlocValidators.required,
-      FieldBlocValidators.email,
-    ],
-  );
-
-  final password = TextFieldBloc(
-    validators: [
-      FieldBlocValidators.required,
-    ],
-  );
-
-  final showSuccessResponse = BooleanFieldBloc();
-
-  LoginFormBloc({
-    @required this.userRepository,
-    @required this.authenticationBloc,
-    })  : assert(userRepository != null),
-        assert(authenticationBloc != null)
-    {
-    addFieldBlocs(
-      fieldBlocs: [
-        email,
-        password,
-        showSuccessResponse,
-      ],
-    );
-  }
-
-  @override
-  void onSubmitting() async {
-    print(email.value);
-    print(password.value);
-    print(showSuccessResponse.value);
-
-    try{
-      final token = await userRepository.authenticate(
-        username: email.value,
-        password: password.value,
-      );
-      if (showSuccessResponse.value) {
-        authenticationBloc.add(LoggedIn(token: token));
-        emitSuccess();
-      } else {
-        emitFailure(failureResponse: 'Awsome Error!');
-      }
-    } catch (e) {
-       // TODO: Map exception to error message 
-      emitFailure(failureResponse: e.toString());
-    }
   }
 }

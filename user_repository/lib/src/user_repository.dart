@@ -26,10 +26,10 @@ class UserRepository {
     return;
   }
 
-  Future<bool> hasToken() async {
+  Future<String> getToken() async {
     print("repository has token");
     /// read from keystore/keychain
     await Future.delayed(Duration(seconds: 1));
-    return false;
+    return 'tokenValue';
   }
 }

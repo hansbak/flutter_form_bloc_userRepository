@@ -6,9 +6,9 @@ import 'package:user_repository/user_repository.dart';
 
 import 'authentication/authentication.dart';
 import 'splash_page.dart';
-import 'home_page.dart';
-import 'login_form.dart';
-import 'common/common.dart';
+import 'forms/home_form.dart';
+import 'forms/login_form.dart';
+import 'widgets/widgets.dart';
 
 class SimpleBlocDelegate extends BlocDelegate {
   @override
@@ -33,21 +33,29 @@ class SimpleBlocDelegate extends BlocDelegate {
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
   final userRepository = UserRepository();
+  final authenticationBloc = AuthenticationBloc(userRepository: userRepository);
+
   runApp(
     BlocProvider<AuthenticationBloc>(
       create: (context) {
         return AuthenticationBloc(userRepository: userRepository)
           ..add(AppStarted());
       },
-      child: App(userRepository: userRepository),
+      child: App(userRepository: userRepository, 
+                 authenticationBloc: authenticationBloc,),
     ),
   );
 }
 
 class App extends StatelessWidget {
   final UserRepository userRepository;
+  final AuthenticationBloc authenticationBloc;
 
-  App({Key key, @required this.userRepository}) : super(key: key);
+  App({Key key, @required this.userRepository,
+                @required this.authenticationBloc})
+    : assert(userRepository != null,
+             authenticationBloc != null),
+    super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +63,7 @@ class App extends StatelessWidget {
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
           if (state is AuthenticationAuthenticated) {
-            return HomePage();
+            return HomeForm(authenticationBloc: authenticationBloc);
           }
           if (state is AuthenticationUnauthenticated) {
             return LoginForm(userRepository: userRepository);
