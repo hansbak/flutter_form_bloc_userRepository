@@ -6,24 +6,14 @@ import 'dart:async';
 
 class HomeFormBloc extends FormBloc<String, String> {
   final AuthenticationBloc authenticationBloc;
-  final company = TextFieldBloc();
-  var companyName;
+  final token = TextFieldBloc();
+  var tokenName;
   StreamSubscription authSubscription;
 
   HomeFormBloc({@required this.authenticationBloc})
     : assert(authenticationBloc != null),
       super(isLoading: true) {
-      addFieldBlocs(fieldBlocs: [company]);
-      authSubscription = authenticationBloc.listen((state) {
-      print("==2==is state: $state");
-      if (state is AuthenticationAuthenticated) {
-        companyName = (authenticationBloc.state as AuthenticationAuthenticated)
-          .token;
-        print("==company1==$companyName"); //ok
-      }
-    });
-    print("==company9==$companyName"); //ok
-    company.updateInitialValue("99");
+      addFieldBlocs(fieldBlocs: [token]);
   }
 
   @override
@@ -32,15 +22,27 @@ class HomeFormBloc extends FormBloc<String, String> {
   }
 
   @override
-  void onLoading() { // for reload
-    print("==start loading ====");
-    print("==company2==$companyName");
-    if (companyName != null) {
-      company.updateInitialValue(companyName.toString());
-      print("==end company.value: ${company.value}");
-    } // else company.updateInitialValue("!!!");
-    print("==end loading ====");
-    emitLoaded();
+  void onLoading() async { // for reload
+    try {
+      print("==start loading ====");
+      
+      authSubscription = await authenticationBloc.listen((state) {
+          print("==2==is state: $state");
+          if (state is AuthenticationAuthenticated) {
+            tokenName = 
+              (authenticationBloc.state as AuthenticationAuthenticated).token;
+            print("==token1==$tokenName"); //ok
+          }
+      });
+
+      print("==token2==$tokenName");
+      token.updateInitialValue(tokenName);
+      print("==end token.value: ${token.value.toString()}");
+      emitLoaded();
+      print("==end loading ====");
+    } catch(e) {
+      emitLoadFailed(failureResponse: "catch, error: $e");
+    }
   }
   @override
   Future<void> close() {
@@ -48,6 +50,4 @@ class HomeFormBloc extends FormBloc<String, String> {
     return super.close();
   }
 }
-
-
 

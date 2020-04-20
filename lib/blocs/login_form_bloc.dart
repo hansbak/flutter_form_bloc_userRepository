@@ -51,8 +51,9 @@ class LoginFormBloc extends FormBloc<String, String> {
         password: password.value,
       );
       if (!showSuccessResponse.value) {
-        authenticationBloc.add(LoggedIn(token: token));
         emitSuccess();
+        await Future.delayed(Duration(seconds: 1));
+        authenticationBloc.add(LoggedIn(token: token));
       } else {
         emitFailure(failureResponse: 'Awsome Error!');
       }
